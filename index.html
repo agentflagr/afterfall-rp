@@ -38,14 +38,14 @@
             padding-bottom: 80px;
         }
 
-        /* INTRO OVERLAY (FIXED FOR MOBILE FULLSCREEN) */
+        /* INTRO OVERLAY */
         #intro-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            height: 100dvh; /* Динамічна висота екрана смартфона */
+            height: 100dvh;
             background-color: #050507;
             z-index: 9999;
             display: flex;
@@ -71,7 +71,7 @@
 
         .intro-title {
             font-family: var(--font-brand);
-            font-size: 2.2rem; /* Зменшено для мобільних пристроїв */
+            font-size: 2.2rem;
             letter-spacing: 4px;
             color: #ffffff;
             text-shadow: 0 0 15px var(--accent-red);
@@ -127,11 +127,11 @@
             box-shadow: 0 0 10px var(--accent-red);
         }
 
-        /* HEADER & NAVIGATION (FIXED OVERLAP ISSUE) */
+        /* HEADER & NAVIGATION */
         header {
             background-color: rgba(13, 13, 16, 0.98);
             border-bottom: 2px solid var(--accent-burgundy);
-            position: relative; /* Не перекриває контент під собою */
+            position: relative;
             z-index: 1000;
         }
 
@@ -156,6 +156,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            cursor: pointer;
+            user-select: none;
         }
 
         .site-brand span {
@@ -691,7 +693,7 @@
     <!-- MAIN HEADER -->
     <header>
         <div class="nav-container">
-            <a href="#" class="site-brand">AFTERFALL <span>DC RP</span></a>
+            <a href="#" class="site-brand" id="admin-trigger-logo">AFTERFALL <span>DC RP</span></a>
             <nav class="main-nav">
                 <ul>
                     <li><a href="#plot" class="nav-link active" onclick="switchTab('plot', event)">Сюжет</a></li>
@@ -792,7 +794,7 @@
                 <div class="card">
                     <button class="delete-card-btn" onclick="this.parentElement.remove()">Видалити</button>
                     <h3 editable>Спам</h3>
-                    <p editable>Після пʼяти одинакових повідомлень, будь то текст, картинки, гіф, будь-що, – це буде визнано спамом і за це ви можете отримати попередження. (Перший раз — попередження, другий — так само, третій — варн).</p>
+                    <p editable>Після пʼяти однакових повідомлень, будь то текст, картинки, гіф, будь-що, – це буде визнано спамом і за це ви можете отримати попередження. (Перший раз — попередження, другий — так само, третій — варн).</p>
                 </div>
                 <div class="card">
                     <button class="delete-card-btn" onclick="this.parentElement.remove()">Видалити</button>
@@ -1061,7 +1063,7 @@
     </footer>
 
     <script>
-        const ADMIN_PASSWORD = "admin123";
+        const ADMIN_PASSWORD = "artiefl5r"; // Новий пароль адміністратора
 
         function checkAdminAuth() {
             const pass = prompt("Введіть пароль адміністратора для доступу:");
@@ -1074,18 +1076,19 @@
             }
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('admin') === 'true') {
-                checkAdminAuth();
-            } else if (localStorage.getItem('afterfall_admin_session') === 'true') {
-                enableAdminAccess();
-            }
-        });
+        // Секретний тригер: 3 швидкі кліки/тапи на логотип "AFTERFALL DC RP" у шапці
+        let brandClickCount = 0;
+        let brandClickTimer = null;
+        document.getElementById('admin-trigger-logo').addEventListener('click', (e) => {
+            e.preventDefault();
+            brandClickCount++;
+            clearTimeout(brandClickTimer);
+            brandClickTimer = setTimeout(() => {
+                brandClickCount = 0;
+            }, 800);
 
-        window.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.shiftKey && e.code === 'KeyA') {
-                e.preventDefault();
+            if (brandClickCount >= 3) {
+                brandClickCount = 0;
                 const isAuth = localStorage.getItem('afterfall_admin_session') === 'true';
                 if (!isAuth) {
                     checkAdminAuth();
@@ -1095,6 +1098,15 @@
                         location.reload();
                     }
                 }
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('admin') === 'true') {
+                checkAdminAuth();
+            } else if (localStorage.getItem('afterfall_admin_session') === 'true') {
+                enableAdminAccess();
             }
         });
 
@@ -1379,7 +1391,7 @@
             link.download = 'index.html';
             link.click();
 
-            alert('Зміни збережено! Скачано оновлений файл index.html.');
+            alert('Зміни збережено! Скачано оновлений файл index.html. Завантаж його на GitHub.');
         }
     </script>
 </body>
