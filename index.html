@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="uk"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFTERFALL — рольова гра DC</title>
+    <!-- GOOGLE FONTS: Orbitron, IBM Plex Serif, IBM Plex Sans, IBM Plex Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&amp;family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,400&amp;family=IBM+Plex+Serif:wght@500;600;700&amp;family=Orbitron:wght@500;700;900&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0d0d10;
+            --bg-card: #18181c;
+            --bg-hover: #222228;
+            --accent-burgundy: #8b1222;
+            --accent-red: #b81d32;
+            --text-silver: #e0e0e0;
+            --text-muted: #a0a0ab;
+            --border-color: #2a2a32;
+
+            /* FONTS */
+            --font-title: 'IBM Plex Serif', serif;
+            --font-body: 'IBM Plex Sans', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --font-brand: 'Orbitron', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-silver);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            padding-bottom: 80px;
+        }
+
+        /* INTRO OVERLAY */
+        #intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            background-color: #050507;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            transition: opacity 1s ease, visibility 1s ease;
+        }
+
+        .dc-logo-svg {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(184, 29, 50, 0.4)); }
+            100% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(184, 29, 50, 0.9)); }
+        }
+
+        .intro-title {
+            font-family: var(--font-brand);
+            font-size: 2.2rem;
+            letter-spacing: 4px;
+            color: #ffffff;
+            text-shadow: 0 0 15px var(--accent-red);
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            max-width: 90vw;
+            word-wrap: break-word;
+        }
+
+        @media (min-width: 768px) {
+            .intro-title {
+                font-size: 3rem;
+                letter-spacing: 8px;
+            }
+            .dc-logo-svg {
+                width: 140px;
+                height: 140px;
+            }
+        }
+
+        .progress-bar-container {
+            width: 80%;
+            max-width: 300px;
+            height: 6px;
+            background: #222;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 1px solid var(--accent-burgundy);
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-burgundy), var(--accent-red));
+            transition: width 0.1s linear;
+        }
+
+        .skip-btn {
+            background: transparent;
+            border: 1px solid var(--accent-burgundy);
+            color: var(--text-silver);
+            padding: 8px 20px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .skip-btn:hover {
+            background: var(--accent-burgundy);
+            color: #fff;
+            box-shadow: 0 0 10px var(--accent-red);
+        }
+
+        /* HEADER & NAVIGATION */
+        header {
+            background-color: rgba(13, 13, 16, 0.98);
+            border-bottom: 2px solid var(--accent-burgundy);
+            position: relative;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .site-brand {
+            font-family: var(--font-brand);
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .site-brand span {
+            color: var(--accent-red);
+        }
+
+        .main-nav {
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .site-brand {
+                font-size: 1.8rem;
+                letter-spacing: 3px;
+            }
+            .main-nav {
+                width: auto;
+            }
+        }
+
+        .main-nav ul {
+            display: flex;
+            list-style: none;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .main-nav a {
+            color: var(--text-silver);
+            text-decoration: none;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            padding: 8px 10px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .main-nav a:hover, .main-nav a.active {
+            color: #fff;
+            background-color: var(--accent-burgundy);
+            box-shadow: 0 0 10px rgba(184, 29, 50, 0.5);
+        }
+
+        /* LAYOUT CONTAINER */
+        .container {
+            max-width: 1200px;
+            margin: 25px auto 40px auto;
+            padding: 0 20px;
+            min-height: 70vh;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* CARDS & SECTIONS */
+        .section-header {
+            font-family: var(--font-title);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            border-bottom: 2px solid var(--accent-burgundy);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .section-header {
+                font-size: 2.2rem;
+            }
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-burgundy);
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .card h3 {
+            font-family: var(--font-title);
+            font-size: 1.3rem;
+            color: var(--accent-red);
+            margin-bottom: 15px;
+        }
+
+        .card p, .card div {
+            font-family: var(--font-body);
+            line-height: 1.6;
+            color: var(--text-silver);
+        }
+
+        /* GALLERY GRID (Dominators) */
+        .dominators-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .gallery-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-item-caption {
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-silver);
+        }
+
+        /* SUB-TABS */
+        .sub-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            align-items: center;
+        }
+
+        .sub-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-silver);
+            padding: 8px 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .sub-btn:hover, .sub-btn.active {
+            background: var(--accent-burgundy);
+            color: #fff;
+            border-color: var(--accent-red);
+        }
+
+        .sub-content {
+            display: none;
+        }
+
+        .sub-content.active {
+            display: block;
+        }
+
+        /* ANKETA CARDS & GRID */
+        .anketa-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .anketa-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            position: relative;
+        }
+
+        .anketa-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-red);
+            box-shadow: 0 5px 15px rgba(184, 29, 50, 0.3);
+        }
+
+        .anketa-card-img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            background: #111;
+        }
+
+        .anketa-card-info {
+            padding: 15px;
+        }
+
+        .anketa-card-title {
+            font-family: var(--font-title);
+            color: #fff;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .anketa-card-alter {
+            color: var(--accent-red);
+            font-size: 0.85rem;
+            font-family: var(--font-mono);
+            margin-bottom: 10px;
+        }
+
+        /* FULL ANKETA VIEW */
+        .anketa-full-view {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--accent-burgundy);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .anketa-header-layout {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .anketa-avatar-box {
+            width: 100%;
+            max-width: 250px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .anketa-avatar-img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 2px solid var(--accent-burgundy);
+            background: #111;
+        }
+
+        .anketa-details-box {
+            flex: 1;
+            min-width: 260px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .detail-row {
+            background: rgba(255,255,255,0.02);
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 3px solid var(--accent-red);
+        }
+
+        .detail-label {
+            font-family: var(--font-mono);
+            color: var(--accent-red);
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .detail-value {
+            font-family: var(--font-body);
+            font-size: 1.05rem;
+            color: #fff;
+        }
+
+        /* SKILLS BADGES */
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .skill-chip {
+            background: rgba(184, 29, 50, 0.2);
+            border: 1px solid var(--accent-red);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .remove-chip {
+            cursor: pointer;
+            color: #ff6b6b;
+            font-weight: bold;
+            display: none;
+        }
+
+        body.editing-mode .remove-chip {
+            display: inline;
+        }
+
+        /* BUTTONS */
+        .btn-action {
+            background: var(--accent-burgundy);
+            color: #fff;
+            border: 1px solid var(--accent-red);
+            padding: 8px 16px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-action:hover {
+            background: var(--accent-red);
+            box-shadow: 0 0 10px rgba(184, 29, 50, 0.6);
+        }
+
+        .btn-delete {
+            background: #a92222;
+            border-color: #d9534f;
+        }
+
+        .btn-delete:hover {
+            background: #d9534f;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 1px solid var(--accent-red);
+            color: #fff;
+            padding: 8px 16px;
+            font-family: var(--font-mono);
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: var(--accent-burgundy);
+        }
+
+        /* ПРИХОВУВАННЯ ЕЛЕМЕНТІВ РЕДАГУВАННЯ */
+        .add-category-btn, 
+        .admin-only,
+        .upload-photo-btn, 
+        .add-skill-btn,
+        .delete-card-btn {
+            display: none !important;
+        }
+
+        body.editing-mode .admin-only,
+        body.editing-mode .delete-card-btn,
+        body.editing-mode .add-category-btn,
+        body.editing-mode .upload-photo-btn,
+        body.editing-mode .add-skill-btn {
+            display: inline-block !important;
+        }
+
+        .delete-card-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #d9534f;
+            color: #fff;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            z-index: 10;
+        }
+
+        /* FACTION CARDS */
+        .faction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .faction-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-burgundy);
+            padding: 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .faction-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-red);
+            box-shadow: 0 5px 15px rgba(184, 29, 50, 0.3);
+        }
+
+        .faction-card h3 {
+            font-family: var(--font-title);
+            color: #fff;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .faction-card p {
+            font-family: var(--font-body);
+            margin-bottom: 12px;
+        }
+
+        .faction-card span {
+            font-family: var(--font-mono);
+        }
+
+        /* CITIES GRID */
+        .cities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .city-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .city-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-red);
+            box-shadow: 0 5px 15px rgba(184, 29, 50, 0.3);
+        }
+
+        .city-card-content {
+            padding: 20px;
+        }
+
+        .city-card h3 {
+            font-family: var(--font-title);
+            color: #fff;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+
+        .city-card p {
+            font-family: var(--font-body);
+        }
+
+        /* EDIT CONTROL PANEL */
+        .edit-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: none;
+            gap: 10px;
+            background: rgba(13, 13, 16, 0.95);
+            padding: 10px 15px;
+            border: 2px solid var(--accent-burgundy);
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .editing-mode [editable] {
+            outline: 2px dashed var(--accent-red) !important;
+            background: rgba(184, 29, 50, 0.08) !important;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        footer {
+            background-color: #08080a;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            padding: 20px;
+            font-size: 0.85rem;
+            font-family: var(--font-mono);
+            color: var(--text-muted);
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body class="">
+
+    <!-- INTRO OVERLAY -->
+    <div id="intro-overlay" style="opacity: 0; visibility: hidden;">
+        <svg class="dc-logo-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="90" fill="none" stroke="#8b1222" stroke-width="8"></circle>
+            <path d="M 50,60 L 85,60 C 110,60 120,75 120,100 C 120,125 110,140 85,140 L 50,140 Z M 70,80 L 70,120 L 85,120 C 95,120 100,112 100,100 C 100,88 95,80 85,80 Z" fill="#b81d32"></path>
+            <path d="M 145,75 C 140,65 128,60 115,60 C 90,60 80,80 80,100 C 80,120 90,140 115,140 C 128,140 140,135 145,125 L 130,115 C 126,122 120,124 114,124 C 100,124 96,112 96,100 C 96,88 100,76 114,76 C 120,76 126,78 130,85 Z" fill="#b81d32"></path>
+        </svg>
+
+        <h1 class="intro-title" editable="">AFTERFALL</h1>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress" style="width: 100%;"></div>
+        </div>
+
+        <button class="skip-btn" onclick="finishIntro()">ПРОПУСТИТИ</button>
+    </div>
+
+    <!-- MAIN HEADER -->
+    <header>
+        <div class="nav-container">
+            <a href="#" class="site-brand" id="admin-trigger-logo">AFTERFALL <span>DC RP</span></a>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#plot" class="nav-link active" onclick="switchTab('plot', event)">Сюжет</a></li>
+                    <li><a href="#rules" class="nav-link" onclick="switchTab('rules', event)">Правила</a></li>
+                    <li><a href="#dominators" class="nav-link" onclick="switchTab('dominators', event)">Домінатори</a></li>
+                    <li><a href="#characters" class="nav-link" onclick="switchTab('characters', event)">Анкети</a></li>
+                    <li><a href="#cities" class="nav-link" onclick="switchTab('cities', event)">Опис міст</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+
+        <!-- СЮЖЕТ -->
+        <section id="plot" class="tab-content active">
+            <h2 class="section-header" editable="">Короткий сюжет</h2>
+            <div class="card">
+                <h3 editable="">Початок</h3>
+                <p editable=""><span style="white-space: pre-wrap">Між галактичним об’єктом прибуде на землю через 98:19:56:10… 98:19:56:9… 98:19:56:8…
+98:19:56:7…
+
+ «До уваги всіх жителів Ґотема, Централ Сіті та Метрополіса, за три місяці на місто
+впадуть три невідомі міжгалактичні обʼєкти. Їхні масштаби невідомі досі, але ми просимо вас
+заздалегідь евакуюватися, щоб уникнути жодної непотрібної жертви»
+
+На небі було помічено ОБʼЄКТИ невідомих розмірів. Вони схожі на КОМЕТИ, але
+стверджувати щось подібне НЕМОЖНА, бо немає ОФІЦІЙНИХ ДАНИХ.
+
+МІЖГАЛАКТИЧНІ ОБʼЄКТИ НАБЛІЗЯТЬСЯ ДО ЗЕМЛІ ЧЕРЕЗ 62:22:19:43.
+
+ Папка на робочому столі компʼютера одного з урядовців відкрита на першій стороні.
+Тут вся одна сторінка: 
+
+«Інформація про обʼєкти в небі»
+ Імовірно ворожі об’єкти, які мають на меті знищити населення найбільше за …
+ПОДАЛЬШУ ІНФОРМАЦІЮ БУЛО ВИДАЛЕНО АБО ЗАСЕКРЕЧЕНО ВИЩОЮ ВЛАДОЮ.
+
+ Тепер ми знаємо, що це …
+ІНФОРМАЦІЮ БУЛО ЗАСЕКРЕЧЕНО З МЕТОЮ БЕЗПЕКИ ГРОМАДЯН І
+ЗАПОБІГАННЯ МАСОВОЇ ІСТЕРІЇ.
+
+ «На жаль, уряд приховує від нас правду, але ми закликаємо вас зібрати ваші речі і поїхати з Ґотем Сіті,
+Метрополіса та Центральна Сіті на строк більше ніж два місяці, залишилися живими. Ми…» 
+ЗВʼЯЗОК БУЛО ВТРАЧЕНО.</span></p>
+            </div>
+        </section>
+
+        <!-- ПРАВИЛА -->
+        <section id="rules" class="tab-content">
+            <div class="section-header">
+                <span editable="">Правила рольової</span>
+                <button class="btn-action admin-only" onclick="addNewRuleCard()">+ Додати правило</button>
+            </div>
+            
+            <div id="rules-container">
+                <div class="card">
+                    <button class="delete-card-btn" onclick="this.parentElement.remove()">Видалити</button>
+                    <h3 editable="">Мова чату</h3>
+                    <p editable="">Ви можете спілкуватися будь-якою мовою, окрім російської. Ми не вимагаємо людей з: російськими описами, контентом на світлинах, що пов’язані з країною-агресором та тими, хто їх підтримує; російською музикою чи каналом у профілі.</p>
+                </div>
+                <div class="card">
+                    <button class="delete-card-btn" onclick="this.parentElement.remove()">Видалити</button>
+                    <h3 editable="">Дорослий контент</h3>
+                    <p editable="">Контент 18+ у чаті дозволених, не зловживайте ним, деяким людям може бути некомфортно.  <br><br>Контент 18+ також дозволений у рольовому чаті, проте обов’язково поставте переджувальний знак на початку поста.</p>
+                </div>
+                <div class="card">
+                    <button class="delete-card-btn" onclick="this.parentElement.remove()">Видалити</button>
+                    <h3 editable="">Мова для постів</h3>
+                    <p editable="">Мова написання постів – українська. Ви можете використовувати інші мови, зважаючи на походження персонажів, проте не зловживайте або додавайте переклад.</p>
+                </div>
+                <div class="card">
+                    <button class="delete-card-btn" onclick="this.parentElement.remove()">Видалити</button>
+                    <h3 editable="">Спілкування (рол чат)</h3>
+                    <p editable="">Спілкування в рольовому чаті заборонено. Месенджер надає можливість виділяти необхідну частину і робити з ним цитату. Ви можете користуватися цим.</p>
+                </div>
+                <div class="card">
+                    <button class="delete-card-btn" onclick="this.parentElement.remove()">Видалити</button>
+                    <h3 editable="">Мері/Марті Сью</h3>
+                    <p editable="">Суворо заборонені. Особливо це стосується оригінальних персонажів, щоб потім між учасниками не виникло нових.</p>
+                </div>
+                <div class="card">
+                    <button class="delete-card-btn" onclick="this.parentElement.remove()">Видалити</button>
+                    <h3 editable="">Про персонажів</h3>
+                    <p editable="">Якщо ви хочете отримати шкоди персонажу свого співгравця – ОБОВʼЯЗКОВО (!!!!) узгоджуйте це з тим гравцем, з яким пишете разом гілку. <br>Не менш важливий!! Не перекреслюйте своїм постом усі події, які були в інших до того, раніше не відбувшись це зі своїми співгравцями. Ви граєте разом, тож поважайте одне одного.</p>
+                </div>
+                <div class="card">
+                    <button class="delete-card-btn" onclick="this.parentElement.remove()">Видалити</button>
+                    <h3 editable="">Норма постів</h3>
+                    <p editable="">1 пост на тиждень (враховуйте, що як тільки заходите у вас є два тижні на ВСТУПНИЙ пост).</p>
+                </div>
+                <div class="card">
+                    <button class="delete-card-btn" onclick="this.parentElement.remove()">Видалити</button>
+                    <h3 editable="">Відпочинок</h3>
+                    <p editable="">Можна брати після місяця перебування у рольовій, за виключенням серйозних проблем. Також відпочинок береться не більше ніж на 3 тижні.</p>
+                </div>
+                <div class="card">
+                    <button class="delete-card-btn" onclick="this.parentElement.remove()">Видалити</button>
+                    <h3 editable="">Спам</h3>
+                    <p editable="">Після пʼяти однакових повідомлень, будь то текст, картинки, гіф, будь-що, – це буде визнано спамом і за це ви можете отримати попередження. (Перший раз — попередження, другий — так само, третій — варн).</p>
+                </div>
+                <div class="card">
+                    <button class="delete-card-btn" onclick="this.parentElement.remove()">Видалити</button>
+                    <h3 editable="">Конфлікти</h3>
+                    <p editable="">Без сварок, ми намагаємося створити дружню атмосферу, тож щиро вас прошу, конфлікти ми присікаємо відразу. Якщо ви щось не можете врешті-решт ви написати власнику і це обговорити.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ДОМІНАТОРИ -->
+        <section id="dominators" class="tab-content">
+            <div class="section-header">
+                <span editable="">Домінатори</span>
+                <button class="btn-action admin-only" onclick="addDominatorImage()">+ Додати арт / фото</button>
+            </div>
+            <div class="card">
+                <h3 editable="">Інопланетна загроза</h3>
+                <p editable="">Інформація про фракцію Домінаторів, їхні плани щодо Землі та мета-людей.</p>
+            </div>
+
+            <!-- GALLERY OF DOMINATORS -->
+            <h3 style="font-family: var(--font-title); color: #fff; margin-top: 25px; margin-bottom: 15px;">Візуальне зображення та Арт</h3>
+            <div class="dominators-gallery" id="dominators-gallery">
+                <div class="gallery-item">
+                    <button class="delete-card-btn" onclick="this.parentElement.remove()">Видалити</button>
+                    <img src="https://i.pinimg.com/736x/a9/db/32/a9db32690a9d5e9c357b6c04408048fc.jpg" alt="Домінатор">
+                    <div class="gallery-item-caption" editable=""><div>Високотехнологічна інопланетна раса завойовників, що походить з планети Домініон. Вони уже неодноразово намагались підкорити, знищити і поневолити Землю, але усі спроби закінчувались невдачею.</div><div><br></div><div>Вони мають жовту шкіру, витягнуті черепи, гострі зуби та велике червоне коло на лобі. Соціальний статус та ранг домінатора залежить повністю від розміру червоного кола на чолі, тобто, чим більший диск, тим вище місце в ієрархії та розумові здібності. Імена мають лише представники найвищих ешелонів влади.</div></div>
+                </div>
+                <div class="gallery-item">
+                    <button class="delete-card-btn" onclick="this.parentElement.remove()">Видалити</button>
+                    <img src="https://i.pinimg.com/736x/25/9b/29/259b29c37c90e6b216e685cf22ed363a.jpg" alt="Домінатор">
+                    <div class="gallery-item-caption" editable=""><div>Раса домінаторіа є найкращими та неперевершеними генетиками. Вони вважають землян величезною загрозою для безпеки Всесвіту через наявність у людей метагену — генетичного потенціалу, що під впливом стресу дає суперсили.</div><div><br></div><div>Вони мають багато різних технологій, які часто використовують, аби отримати бажане: зорельоти з варп-двигунами, трансфазні гармати, біокулі, тахіонні руйнівники, нейтронні бластери, Starstriker, A.I Вірус та суперсолдатів.</div></div>
+                </div>
+                <div class="gallery-item">
+                    <button class="delete-card-btn" onclick="this.parentElement.remove()">Видалити</button>
+                    <img src="https://comicvine.gamespot.com/a/uploads/scale_medium/1/15659/3051338-primus_dom-legion_super-heroes%236-edited.jpg" alt="Домінатор">
+                    <div class="gallery-item-caption" editable=""><div>Головним у домінаторів є Праймус Дом [Primus Dom] — він жорстокий і єдиний правитель, усі інші стоять нижче нього за рангом, а якщо хтось його ослухається, він зʼїдає їх.&nbsp;</div><div><br></div><div>Праймус виставив правила своїм підопічним, яких дотримуватись було обовʼязково:&nbsp;</div><div>&nbsp;1. Нижчий за рангом завжди повинен наближатись до вищого з покорою та сподіванням, що йому дозволять вижити.</div><div>&nbsp;2. Як би сильно не виріс диск на чолі домінатора за його діяння, завжди знайдеться хтось величніше.&nbsp;</div><div>&nbsp;3. Щоб величні процвітали, менші мусять коритись.&nbsp;</div><div>&nbsp;4. Усі ми — їжа.&nbsp;</div><div><br></div><div>Саме ці інопланетні істоти спустились на Землю, щоб знову спробувати її захопити і хто знає… можливо цього разу у них усе вийде.</div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- АНКЕТИ ПЕРСОНАЖІВ -->
+        <section id="characters" class="tab-content">
+            <div class="section-header">
+                <span editable="">Профілі персонажів</span>
+            </div>
+            
+            <div class="sub-nav" id="categories-nav">
+                <button class="sub-btn active" onclick="switchSubTab('batfamily', event)">Batfamily</button>
+                <button class="sub-btn" onclick="switchSubTab('gotham-villains', event)">Gotham villains</button>
+                <button class="sub-btn" onclick="switchSubTab('superman-family', event)">Superman family</button>
+                <button class="sub-btn" onclick="switchSubTab('justice-league', event)">Justice League</button>
+                <button class="sub-btn" onclick="switchSubTab('magic-supernatural', event)">Magic, horror and supernatural</button>
+                <button class="sub-btn" onclick="switchSubTab('argus-section', event)">ARGUS / Suicide Squad / Peacemaker</button>
+                
+                <button class="add-category-btn" onclick="createNewCategory()">+ Додати нову категорію</button>
+            </div>
+
+            <!-- СПИСОК АНКЕТ ПО КАТЕГОРІЯХ -->
+            <div id="anketa-lists-container">
+                <!-- BATFAMILY -->
+                <div id="batfamily" class="sub-content active">
+                    <div style="margin-bottom: 15px; text-align: right;">
+                        <button class="btn-action admin-only" onclick="addNewAnketa('batfamily-grid')">+ Додати профіль персонажа</button>
+                    </div>
+                    <div class="anketa-grid" id="batfamily-grid"></div>
+                </div>
+
+                <!-- GOTHAM VILLAINS -->
+                <div id="gotham-villains" class="sub-content">
+                    <div style="margin-bottom: 15px; text-align: right;">
+                        <button class="btn-action admin-only" onclick="addNewAnketa('villains-grid')">+ Додати профіль персонажа</button>
+                    </div>
+                    <div class="anketa-grid" id="villains-grid"></div>
+                </div>
+
+                <!-- SUPERMAN FAMILY -->
+                <div id="superman-family" class="sub-content">
+                    <div style="margin-bottom: 15px; text-align: right;">
+                        <button class="btn-action admin-only" onclick="addNewAnketa('superman-grid')">+ Додати профіль персонажа</button>
+                    </div>
+                    <div class="anketa-grid" id="superman-grid"></div>
+                </div>
+
+                <!-- JUSTICE LEAGUE -->
+                <div id="justice-league" class="sub-content">
+                    <div style="margin-bottom: 15px; text-align: right;">
+                        <button class="btn-action admin-only" onclick="addNewAnketa('jl-grid')">+ Додати профіль персонажа</button>
+                    </div>
+                    <div class="anketa-grid" id="jl-grid"></div>
+                </div>
+
+                <!-- MAGIC, HORROR & SUPERNATURAL -->
+                <div id="magic-supernatural" class="sub-content">
+                    <div style="margin-bottom: 15px; text-align: right;">
+                        <button class="btn-action admin-only" onclick="addNewAnketa('magic-grid')">+ Додати профіль персонажа</button>
+                    </div>
+                    <div class="anketa-grid" id="magic-grid"></div>
+                </div>
+
+                <!-- A.R.G.U.S. / SUICIDE SQUAD / PEACEMAKER -->
+                <div id="argus-section" class="sub-content">
+                    <div id="factions-main-view" class="faction-grid">
+                        <div class="faction-card" onclick="openFactionPage('argus-sub')">
+                            <h3>ARGUS</h3>
+                            <p>Група передових дослідників, що об'єднує надлюдей.</p>
+                            <span style="color: var(--accent-red); font-size: 0.85rem;">Відкрити профілі ↗</span>
+                        </div>
+
+                        <div class="faction-card" onclick="openFactionPage('squad-sub')">
+                            <h3>Suicide Squad</h3>
+                            <p>Команда таємних операцій ув'язнених суперзлодіїв.</p>
+                            <span style="color: var(--accent-red); font-size: 0.85rem;">Відкрити профілі ↗</span>
+                        </div>
+
+                        <div class="faction-card" onclick="openFactionPage('peacemaker-sub')">
+                            <h3>Peacemaker</h3>
+                            <p>Крістофер Сміт та пов'язані з ним польові агенти.</p>
+                            <span style="color: var(--accent-red); font-size: 0.85rem;">Відкрити профілі ↗</span>
+                        </div>
+                    </div>
+
+                    <!-- SUB PAGES FOR FACTIONS -->
+                    <div id="argus-sub" class="sub-faction-page" style="display:none; margin-top:20px;">
+                        <button class="back-btn" onclick="closeFactionPage()">← Назад до Фракції</button>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                            <h2 style="color:#fff; font-family:var(--font-title);">Профілі ARGUS</h2>
+                            <button class="btn-action admin-only" onclick="addNewAnketa('argus-grid')">+ Додати профіль</button>
+                        </div>
+                        <div class="anketa-grid" id="argus-grid"></div>
+                    </div>
+
+                    <div id="squad-sub" class="sub-faction-page" style="display:none; margin-top:20px;">
+                        <button class="back-btn" onclick="closeFactionPage()">← Назад до Фракції</button>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                            <h2 style="color:#fff; font-family:var(--font-title);">Профілі Загону Самогубців</h2>
+                            <button class="btn-action admin-only" onclick="addNewAnketa('squad-grid')">+ Додати профіль</button>
+                        </div>
+                        <div class="anketa-grid" id="squad-grid"></div>
+                    </div>
+
+                    <div id="peacemaker-sub" class="sub-faction-page" style="display:none; margin-top:20px;">
+                        <button class="back-btn" onclick="closeFactionPage()">← Назад до Фракції</button>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                            <h2 style="color:#fff; font-family:var(--font-title);">Профілі команди Миротворця</h2>
+                            <button class="btn-action admin-only" onclick="addNewAnketa('peacemaker-grid')">+ Додати профіль</button>
+                        </div>
+                        <div class="anketa-grid" id="peacemaker-grid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SINGLE ANKETA VIEW -->
+            <div id="anketa-single-view" class="anketa-full-view">
+                <button class="back-btn" onclick="closeAnketaView()">← Назад до списку профілів</button>
+                <div style="text-align: right; margin-bottom: 15px;">
+                    <button class="btn-action btn-delete admin-only" onclick="deleteCurrentAnketa()">🗑 Видалити профіль</button>
+                </div>
+
+                <div class="anketa-header-layout">
+                    <div class="anketa-avatar-box">
+                        <img id="view-avatar" class="anketa-avatar-img" src="https://via.placeholder.com/280x240/18181c/8b1222?text=New+Hero" alt="Аватар">
+                        <input type="file" id="file-input" style="display:none;" accept="image/*" onchange="handleFileSelect(event)">
+                        <button class="upload-photo-btn" onclick="document.getElementById('file-input').click()">📷 Завантажити фото</button>
+                        <button class="upload-photo-btn" onclick="promptPhotoUrl()">🔗 URL-адреса зображення</button>
+                    </div>
+
+                    <div class="anketa-details-box">
+                        <div class="detail-row">
+                            <div class="detail-label">Ім'я та прізвище</div>
+                            <div class="detail-value" id="view-name" editable="">Брюс Вейн</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Альтер-Его</div>
+                            <div class="detail-value" id="view-alter" editable="">Бетмен</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Вік</div>
+                            <div class="detail-value" id="view-age" editable="">35 років</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Місто / Розташування</div>
+                            <div class="detail-value" id="view-city" editable="">Ґотем-Сіті</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Здібності та навички</div>
+                            <div class="skills-container" id="view-skills">
+                                <span class="skill-chip"><span editable="">Майстер бойових мистецтв</span> <span class="remove-chip" onclick="this.parentElement.remove()">×</span></span>
+                                <span class="skill-chip"><span editable="">Пікові детективні навички</span> <span class="remove-chip" onclick="this.parentElement.remove()">×</span></span>
+                            </div>
+                            <button class="add-skill-btn" onclick="addSkillChip()" style="margin-top:10px;">+ Додати здатність</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-row" style="margin-top: 20px;">
+                    <div class="detail-label">Особистість та біографія</div>
+                    <div class="detail-value" id="view-personality" editable="" style="line-height:1.6; min-height:80px;">Деталі особистості...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ОПИС МІСТ -->
+        <section id="cities" class="tab-content">
+            <h2 class="section-header" editable="">Опис міст</h2>
+            
+            <div id="cities-list" class="cities-grid" style="display: grid;">
+                <div class="city-card" onclick="openCityView('gotham-view')">
+                    <div class="city-card-content">
+                        <h3 editable="">Ґотем-Сіті</h3>
+                        <p editable="">Похмурий мегаполіс, оповитий злочинністю. Натисніть, щоб відкрити повний опис.</p>
+                    </div>
+                </div>
+
+                <div class="city-card" onclick="openCityView('metropolis-view')">
+                    <div class="city-card-content">
+                        <h3 editable="">Метрополіс</h3>
+                        <p editable="">Місто завтрашнього дня. Натисніть, щоб відкрити повний опис.</p>
+                    </div>
+                </div>
+
+                <div class="city-card" onclick="openCityView('centralcity-view')">
+                    <div class="city-card-content">
+                        <h3 editable="">Централ-Сіті</h3>
+                        <p editable="">Дім найшвидшої людини на Землі. Натисніть, щоб відкрити повний опис.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GOTHAM -->
+            <div id="gotham-view" class="city-full-view" style="display: none; background: var(--bg-card); padding: 20px; border-radius: 8px; border: 1px solid var(--accent-burgundy);">
+                <button class="back-btn" onclick="closeCityView()">← Повернутися до всіх міст</button>
+                <h1 style="color:#fff; font-family:var(--font-title); margin-bottom: 20px;" editable="">ҐОТЕМ-СІТІ</h1>
+                <div editable="" style="line-height:1.6; font-family:var(--font-body);"><div>Місто розташоване на східному узбережжі США, недалеко від Метрополіса. Ґотем був заснований у 1635 році шведським підданим Джоном Лоджерквістом. Поселення спочатку мало назву «Форт Адольфус». Свою теперішню назву — Ґотем, — місто отримало після переходу під владу Англії у 1674 році.&nbsp;</div><div>Неблагополучну історію Ґотема місцеві повʼязують із невдало підібраною назвою, а також містом часто витають історії про дурнів, які насправді були і є божевільними, що додає не тільки шарму, а й атмосфери страху. Також люди переповідають легенду про те, що під час Війни за Незалежність територія Ґотема була місцем проведення окультних обрядів, які пробудили злий дух міста. Подібними містичними збігами люди намагаються пояснити факт того, що Ґотем став місцем підвищеної концентрації всіляких зловісних сил, а також більшості земних вад: злочинності, корупції та інших різних поганих речей.&nbsp;</div><div><br></div><div>Приблизно так місто міцно набуло слави одного з найбільш неблагополучних мегаполісів країни через свою репутацію і знання людей.&nbsp;</div><div><br></div><div>Але не менш цікавим є те, що Ґотем стрімко розвивався завдяки припливу переселенців. До кінця століття місто перетворилося на найбільший промисловий та фінансовий центр, починаючи потроху розквітати у теренах злочинних угрупувань. Активне зростання супроводжувалося досить суперечливими соціальними процесами, бо коли в одній частині міста стрімко зростав добробут, на іншому — накопичувались мільйони напівзлиденних іммігрантів, які стали живильним середовищем для тотальної злочинності.&nbsp;</div><div>Мафія остаточно підпорядкувала собі місто до ери Сухого закону, саме тоді в Ґотемі впливу гангстерів став масштабнішим і тривалішим, ніж в середньому по країні.&nbsp;</div><div><br></div><div>З часом у поліції зʼявилась нова реформа і часткове викорінення корупції, що повʼязано із діяльність комісара Джеймса Ґордона та окружного прокурора Гарві Дента. За підтримки муніципальної влади, органи правопорядку почали цілий хрестовий похід проти злочинності. Та відмінною рисою кримінальної ситуації Ґотема стала поява цілої плеяди суперлиходіїв, які, як правило, були психопатами, що володіли деякими незвичайними здібностями. Вони очолювали власні банди, влаштовували широкомасштабні терористичні акти проти населення та різні злочини. Влада ж була безсилою проти нової загрози, тому уклала договір з Бетменом, який взявся захищати місто.&nbsp;</div><div><br></div><div>Не менше того, Ґотем потерпає від екологічних проблем, які були викликані надзвичайною скупченістю забудови.&nbsp;</div><div>Саме ж місто — це економічний центр, тут є фондові біржі, офіси банків та корпорацій. Велика кількість театрів, музеїв, університетів.</div></div>
+            </div>
+
+            <!-- METROPOLIS -->
+            <div id="metropolis-view" class="city-full-view" style="display: none; background: var(--bg-card); padding: 20px; border-radius: 8px; border: 1px solid var(--accent-burgundy);">
+                <button class="back-btn" onclick="closeCityView()">← Повернутися до всіх міст</button>
+                <h1 style="color:#fff; font-family:var(--font-title); margin-bottom: 20px;" editable="">МЕТРОПОЛІС</h1>
+                <div editable="" style="line-height:1.6; font-family:var(--font-body);"><div>Метрополіс раніше було відоме як Селище Де Вріз та назване Містом завтрашнього дня. Воно стало одним з крупніших міст у штаті Делавер та знаходиться під захистом Супермена і місцевої команди — Банди Справедливості.&nbsp;&nbsp;</div><div><br></div><div>У 1634 році територія сучасного Метрополіса була заселена переважно голландськими переселенцями зі своїм очільником, голландцем на імʼя Поль Де Вріз. Він заснував Селище Де Вріз. Пізніше Селище почало процвітати завдяки своєму місцезнаходженню поруч з прибережною гаванню, що дозволило місцевим жителям легко торгувати, а вже в 1645 році місто було перейменоване у Метрополіс.&nbsp;</div><div><br></div><div>Час ніколи не стояв на місці, а разом і з ним населення та розміри селища почали збільшуватись. Територія, яка раніше була відомою як Селище Де Вріз, отримала назву «Старе Місто» в районі, який став відомий як Квінслендський парк. До того ж, у місті зʼявилося декілька нових районів, наприклад Даунтаун та район, який безпосередньо огортав Гобз Бей.&nbsp;</div><div><br></div><div>У 1775 році, у самому серці Метрополіса, було засновано газету Daily Planet, яка стала відомою своїми статтями про правду та справедливість. Саме вона зіграла найважливішу роль в історії Метрополіса, як міста, а її знаменита куля стала символом місткої печаті, яка була зображена на його прапорі. У 1783 році П. Рендалл Джеффріс заснував Перший Метропольский банк.&nbsp;</div><div><br></div><div>Уже всередині 1800х років, в районі Гобз Бей відбувся притік ірландських іммігрантів, який стався одночасно із зростанням цього району як торгівельного центру. Між іммігрантами та жителями міста у другому поколінні почала рости напруга, що і призвело до серії заворушень, яке нині відоме як «заворушення у Гобз Бей».&nbsp;</div><div><br></div><div>В часи американської промислової революції у Метрополісі був основний сталеплавильний цех The Steel Works, що дозволило місту процвітати й продовжувати вводити інновації. Жителі ж, у свою чергу, продовжували вводити власні ініціативи та придбали репутацію маяка надії, за що Метрополіс назвали «Містом завтрашнього дня»</div></div>
+            </div>
+
+            <!-- CENTRAL CITY -->
+            <div id="centralcity-view" class="city-full-view" style="display: none; background: var(--bg-card); padding: 20px; border-radius: 8px; border: 1px solid var(--accent-burgundy);">
+                <button class="back-btn" onclick="closeCityView()">← Повернутися до всіх міст</button>
+                <h1 style="color:#fff; font-family:var(--font-title); margin-bottom: 20px;" editable="">ЦЕНТРАЛ-СІТІ</h1>
+                <div editable="" style="line-height:1.6; font-family:var(--font-body);"><div>Місто, що зародилося на берегах річки Міссісіпі у штаті Міссурі, почало носити на собі назву — Централ Сіті. Воно було скромним, затишним, якому буквально судилося перетворитись на один із найпрогресивніших мегаполісів у світі. На відміну від індустріальних гігантів, Централ Сіті завжди мало орієнтир на науку, передові технології, екологію та комфорт власних мешканців. Вулиці міста розплановані з великою кількістю парків та зелених зон, такого мало де зустрінеш. Серцем наукового та економічного зростання міста стала активна побудова різних лабораторій, дослідницьких центрів та високотехнологічних комплексів разом із підприємствами.&nbsp;&nbsp;</div><div><br></div><div>Поруч із тим, на протилежному боці річки, почало розростатись сусіднє Кістоун Сіті, що стало суворим індустріальним центром. Але з часом обидва міста утворили тісну агломерацію, в якій Кістоун забезпечував промислову потужність, а Централ сіті — інтелект, адміністративний устрій та став культурним мозковим центром.&nbsp;</div><div><br></div><div>Справжній розквіт Централ Сіті припав на той час, коли воно опинилося під захистом Флеша. Люди настільки пишались своїм героєм, що заснували на честь нього памʼятку — Музей Флеша, який став символом вдячності, надії та незламного духу міста. А завдяки роботі міського поліцейського управління та лабораторій, Централ Сіті досить довго було тим, де злочинність мала мало шансів на успіх.</div></div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- EDIT CONTROL PANEL -->
+    <div class="edit-controls" id="editor-panel" style="display: none;">
+        <button class="btn-action" id="toggle-edit-btn" onclick="toggleEditMode()">✏️ Edit Mode</button>
+        <button class="btn-action" id="save-btn" onclick="saveSiteHTML()" style="display: none; background: rgb(40, 167, 69); border-color: rgb(40, 167, 69);">💾 Зберегти зміни</button>
+    </div>
+
+    <footer>
+        <p>© Рольовий проєкт AFTERFALL DC. Усі права захищено DC Comics.</p>
+    </footer>
+
+    <script>
+        const ADMIN_PASSWORD = "artiefl5r"; // Новий пароль адміністратора
+
+        function checkAdminAuth() {
+            const pass = prompt("Введіть пароль адміністратора для доступу:");
+            if (pass === ADMIN_PASSWORD) {
+                localStorage.setItem('afterfall_admin_session', 'true');
+                enableAdminAccess();
+                alert("Успішний вхід! Панель адміністратора активовано.");
+            } else if (pass !== null) {
+                alert("Невірний пароль!");
+            }
+        }
+
+        // Секретний тригер: 3 швидкі кліки/тапи на логотип "AFTERFALL DC RP" у шапці
+        let brandClickCount = 0;
+        let brandClickTimer = null;
+        document.getElementById('admin-trigger-logo').addEventListener('click', (e) => {
+            e.preventDefault();
+            brandClickCount++;
+            clearTimeout(brandClickTimer);
+            brandClickTimer = setTimeout(() => {
+                brandClickCount = 0;
+            }, 800);
+
+            if (brandClickCount >= 3) {
+                brandClickCount = 0;
+                const isAuth = localStorage.getItem('afterfall_admin_session') === 'true';
+                if (!isAuth) {
+                    checkAdminAuth();
+                } else {
+                    if (confirm("Вийти з режиму адміністратора?")) {
+                        localStorage.removeItem('afterfall_admin_session');
+                        location.reload();
+                    }
+                }
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('admin') === 'true') {
+                checkAdminAuth();
+            } else if (localStorage.getItem('afterfall_admin_session') === 'true') {
+                enableAdminAccess();
+            }
+        });
+
+        function enableAdminAccess() {
+            document.getElementById('editor-panel').style.display = 'flex';
+        }
+
+        // INTRO PROGRESS
+        let width = 0;
+        const progressBar = document.getElementById('progress');
+        const interval = setInterval(() => {
+            if (width >= 100) {
+                clearInterval(interval);
+                finishIntro();
+            } else {
+                width += 2;
+                progressBar.style.width = width + '%';
+            }
+        }, 30);
+
+        function finishIntro() {
+            const overlay = document.getElementById('intro-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.visibility = 'hidden';
+            }, 1000);
+        }
+
+        // NAVIGATION TABS
+        function switchTab(tabId, event) {
+            if (event) event.preventDefault();
+            
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            if (event) event.target.classList.add('active');
+        }
+
+        function switchSubTab(subTabId, event) {
+            document.querySelectorAll('.sub-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.sub-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(subTabId).classList.add('active');
+            if (event) event.target.classList.add('active');
+            closeAnketaView();
+        }
+
+        // ADD NEW RULE CARD
+        function addNewRuleCard() {
+            const container = document.getElementById('rules-container');
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <button class="delete-card-btn" onclick="this.parentElement.remove()">Видалити</button>
+                <h3 editable>Нове правило</h3>
+                <p editable>Опис правила та умови для гравців.</p>
+            `;
+            container.appendChild(card);
+            if (isEditing) {
+                card.querySelectorAll('[editable]').forEach(el => el.setAttribute('contenteditable', 'true'));
+            }
+        }
+
+        // ADD DOMINATOR IMAGE
+        function addDominatorImage() {
+            const gallery = document.getElementById('dominators-gallery');
+            const url = prompt("Введіть посилання на фото Домінаторів (URL):", "https://via.placeholder.com/400x250/18181c/8b1222?text=Dominator+Art");
+            if (!url) return;
+
+            const caption = prompt("Введіть підпис до фото:", "Опис арту");
+            
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            item.innerHTML = `
+                <button class="delete-card-btn" onclick="this.parentElement.remove()">Видалити</button>
+                <img src="${url}" alt="Dominator">
+                <div class="gallery-item-caption" editable>${caption || 'Опис арту'}</div>
+            `;
+            gallery.appendChild(item);
+            if (isEditing) {
+                item.querySelectorAll('[editable]').forEach(el => el.setAttribute('contenteditable', 'true'));
+            }
+        }
+
+        // DYNAMIC CATEGORY CREATION
+        function createNewCategory() {
+            const name = prompt("Enter new category name (e.g. Teen Titans, Aquaman Family):");
+            if (!name) return;
+
+            const categoryId = 'cat-' + Date.now();
+            const gridId = 'grid-' + Date.now();
+
+            const navBtn = document.createElement('button');
+            navBtn.className = 'sub-btn';
+            navBtn.innerText = name;
+            navBtn.onclick = function(e) { switchSubTab(categoryId, e); };
+            
+            const addBtn = document.querySelector('.add-category-btn');
+            document.getElementById('categories-nav').insertBefore(navBtn, addBtn);
+
+            const contentDiv = document.createElement('div');
+            contentDiv.id = categoryId;
+            contentDiv.className = 'sub-content';
+            contentDiv.innerHTML = `
+                <div style="margin-bottom: 15px; text-align: right;">
+                    <button class="btn-action admin-only" onclick="addNewAnketa('${gridId}')">+ Add Character Profile</button>
+                </div>
+                <div class="anketa-grid" id="${gridId}"></div>
+            `;
+
+            document.getElementById('anketa-lists-container').appendChild(contentDiv);
+            switchSubTab(categoryId, { target: navBtn });
+        }
+
+        // FACTION SUB-PAGES
+        function openFactionPage(pageId) {
+            document.getElementById('factions-main-view').style.display = 'none';
+            document.querySelectorAll('.sub-faction-page').forEach(p => p.style.display = 'none');
+            document.getElementById(pageId).style.display = 'block';
+        }
+
+        function closeFactionPage() {
+            document.querySelectorAll('.sub-faction-page').forEach(p => p.style.display = 'none');
+            document.getElementById('factions-main-view').style.display = 'grid';
+        }
+
+        // ANKETA SYSTEM DATA STORAGE
+        let currentActiveCard = null;
+
+        function addNewAnketa(gridId) {
+            const grid = document.getElementById(gridId);
+            const cardId = 'anketa-' + Date.now();
+
+            const card = document.createElement('div');
+            card.className = 'anketa-card';
+            card.id = cardId;
+            card.onclick = function() { openAnketaView(cardId); };
+
+            card.innerHTML = `
+                <img src="https://via.placeholder.com/280x240/18181c/8b1222?text=New+Hero" class="anketa-card-img" alt="Hero">
+                <div class="anketa-card-info">
+                    <div class="anketa-card-title" data-field="name">New Character</div>
+                    <div class="anketa-card-alter" data-field="alter">Alter-Ego</div>
+                </div>
+                <div class="anketa-hidden-data" style="display:none;">
+                    <div data-field="age">Age: Unknown</div>
+                    <div data-field="city">City: Unknown</div>
+                    <div data-field="skills">Skill 1</div>
+                    <div data-field="personality">Personality details...</div>
+                </div>
+            `;
+
+            grid.appendChild(card);
+            openAnketaView(cardId);
+        }
+
+        function openAnketaView(cardId) {
+            currentActiveCard = document.getElementById(cardId);
+            if (!currentActiveCard) return;
+
+            document.getElementById('view-avatar').src = currentActiveCard.querySelector('.anketa-card-img').src;
+            document.getElementById('view-name').innerText = currentActiveCard.querySelector('[data-field="name"]').innerText;
+            document.getElementById('view-alter').innerText = currentActiveCard.querySelector('[data-field="alter"]').innerText;
+
+            const hiddenData = currentActiveCard.querySelector('.anketa-hidden-data');
+            if (hiddenData) {
+                document.getElementById('view-age').innerText = hiddenData.querySelector('[data-field="age"]').innerText;
+                document.getElementById('view-city').innerText = hiddenData.querySelector('[data-field="city"]').innerText;
+                document.getElementById('view-personality').innerText = hiddenData.querySelector('[data-field="personality"]').innerText;
+            }
+
+            document.getElementById('anketa-lists-container').style.display = 'none';
+            document.getElementById('anketa-single-view').style.display = 'block';
+        }
+
+        function closeAnketaView() {
+            if (currentActiveCard) {
+                currentActiveCard.querySelector('.anketa-card-img').src = document.getElementById('view-avatar').src;
+                currentActiveCard.querySelector('[data-field="name"]').innerText = document.getElementById('view-name').innerText;
+                currentActiveCard.querySelector('[data-field="alter"]').innerText = document.getElementById('view-alter').innerText;
+
+                const hiddenData = currentActiveCard.querySelector('.anketa-hidden-data');
+                if (hiddenData) {
+                    hiddenData.querySelector('[data-field="age"]').innerText = document.getElementById('view-age').innerText;
+                    hiddenData.querySelector('[data-field="city"]').innerText = document.getElementById('view-city').innerText;
+                    hiddenData.querySelector('[data-field="personality"]').innerText = document.getElementById('view-personality').innerText;
+                }
+            }
+
+            document.getElementById('anketa-single-view').style.display = 'none';
+            document.getElementById('anketa-lists-container').style.display = 'block';
+            currentActiveCard = null;
+        }
+
+        function deleteCurrentAnketa() {
+            if (currentActiveCard) {
+                if (confirm("Ви впевнені, що хочете видалити цей профіль?")) {
+                    currentActiveCard.remove();
+                    closeAnketaView();
+                }
+            }
+        }
+
+        // PHOTO HANDLERS
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('view-avatar').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function promptPhotoUrl() {
+            const url = prompt("Enter image URL:");
+            if (url) {
+                document.getElementById('view-avatar').src = url;
+            }
+        }
+
+        // SKILLS HANDLER
+        function addSkillChip() {
+            const name = prompt("Enter ability/skill name:");
+            if (name) {
+                const chip = document.createElement('span');
+                chip.className = 'skill-chip';
+                chip.innerHTML = `<span editable>${name}</span> <span class="remove-chip" onclick="this.parentElement.remove()">×</span>`;
+                document.getElementById('view-skills').appendChild(chip);
+            }
+        }
+
+        // CITY VIEWS
+        function openCityView(cityId) {
+            document.getElementById('cities-list').style.display = 'none';
+            document.querySelectorAll('.city-full-view').forEach(v => v.style.display = 'none');
+            document.getElementById(cityId).style.display = 'block';
+        }
+
+        function closeCityView() {
+            document.querySelectorAll('.city-full-view').forEach(v => v.style.display = 'none');
+            document.getElementById('cities-list').style.display = 'grid';
+        }
+
+        // EDIT MODE & SAVE
+        let isEditing = false;
+        function toggleEditMode() {
+            isEditing = !isEditing;
+            const toggleBtn = document.getElementById('toggle-edit-btn');
+            const saveBtn = document.getElementById('save-btn');
+            const editableElements = document.querySelectorAll('[editable]');
+
+            if (isEditing) {
+                document.body.classList.add('editing-mode');
+                editableElements.forEach(el => el.setAttribute('contenteditable', 'true'));
+                toggleBtn.innerText = '❌ Disable Editing';
+                saveBtn.style.display = 'inline-block';
+            } else {
+                document.body.classList.remove('editing-mode');
+                editableElements.forEach(el => el.removeAttribute('contenteditable'));
+                toggleBtn.innerText = '✏️ Edit Mode';
+                saveBtn.style.display = 'none';
+            }
+        }
+
+        function saveSiteHTML() {
+            if (currentActiveCard) closeAnketaView();
+            toggleEditMode();
+            
+            document.body.classList.remove('editing-mode');
+            document.getElementById('editor-panel').style.display = 'none';
+
+            const fullContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+            
+            document.getElementById('editor-panel').style.display = 'flex';
+
+            const blob = new Blob([fullContent], { type: 'text/html;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'index.html';
+            link.click();
+
+            alert('Зміни збережено! Скачано оновлений файл index.html. Завантаж його на GitHub.');
+        }
+    </script>
+
+
+</body></html>
