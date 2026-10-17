@@ -1188,7 +1188,15 @@
             });
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
+       window.addEventListener('DOMContentLoaded', () => {
+            // Делегування подій для всіх анкет (працюватиме навіть для створених анкет)
+            document.addEventListener('click', (e) => {
+                const card = e.target.closest('.anketa-card');
+                if (card && card.id) {
+                    openAnketaView(card.id);
+                }
+            });
+
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('admin') === 'true') {
                 checkAdminAuth();
