@@ -639,7 +639,7 @@
             font-family: var(--font-body);
         }
 
-        /* EDIT CONTROL PANEL */
+        /* EDIT CONTROL PANEL & MODAL */
         .edit-controls {
             position: fixed;
             bottom: 20px;
@@ -652,6 +652,56 @@
             border: 2px solid var(--accent-burgundy);
             border-radius: 8px;
             box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        /* GITHUB SETTINGS MODAL */
+        #github-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.85);
+            z-index: 20000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .github-modal-content {
+            background: var(--bg-card);
+            border: 2px solid var(--accent-burgundy);
+            padding: 25px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 0 30px rgba(139, 18, 34, 0.5);
+        }
+
+        .github-modal-content h3 {
+            font-family: var(--font-brand);
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        .github-input {
+            width: 100%;
+            background: #0d0d10;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 10px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .github-input:focus {
+            border-color: var(--accent-red);
+            outline: none;
         }
 
         .editing-mode [editable] {
@@ -1057,7 +1107,24 @@
     <!-- EDIT CONTROL PANEL -->
     <div class="edit-controls" id="editor-panel">
         <button class="btn-action" id="toggle-edit-btn" onclick="toggleEditMode()">✏️ Edit Mode</button>
-        <button class="btn-action" id="save-btn" onclick="saveSiteHTML()" style="display:none; background: #28a745; border-color:#28a745;">💾 Зберегти зміни</button>
+        <button class="btn-action" id="github-settings-btn" onclick="openGitHubModal()" style="background: #1f6feb; border-color:#388bfd;">⚙️ Налаштування GitHub</button>
+        <button class="btn-action" id="save-btn" onclick="saveToGitHub()" style="display:none; background: #28a745; border-color:#28a745;">🚀 Оновити на GitHub</button>
+    </div>
+
+    <!-- GITHUB SETTINGS MODAL -->
+    <div id="github-modal">
+        <div class="github-modal-content">
+            <h3>AFTERFALL // GITHUB SYNC</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Введи свій GitHub Personal Access Token та репозиторій, щоб сайт оновлювався автоматично.</p>
+            <label style="font-size: 0.8rem; font-family: var(--font-mono); color: var(--accent-red);">GITHUB TOKEN</label>
+            <input type="password" id="gh-token" class="github-input" placeholder="ghp_xxxxxxxxxxxx">
+            <label style="font-size: 0.8rem; font-family: var(--font-mono); color: var(--accent-red);">REPOSITORY (наприклад: username/repo)</label>
+            <input type="text" id="gh-repo" class="github-input" placeholder="yourname/yourname.github.io">
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;">
+                <button class="btn-action" onclick="closeGitHubModal()" style="background: #444; border-color:#666;">Скасувати</button>
+                <button class="btn-action" onclick="saveGitHubSettings()" style="background: #28a745; border-color:#28a745;">Зберегти налаштування</button>
+            </div>
+        </div>
     </div>
 
     <footer>
@@ -1078,7 +1145,7 @@
             }
         }
 
-        // Секретний тригер: 3 швидкі кліки/тапи на логотип "AFTERFALL DC RP" у шапці
+        // Секретний тригер: 3 швидкі кліки/тапи на логотип у шапці
         let brandClickCount = 0;
         let brandClickTimer = null;
         const logoTrigger = document.getElementById('admin-trigger-logo');
@@ -1113,6 +1180,10 @@
             } else if (localStorage.getItem('afterfall_admin_session') === 'true') {
                 enableAdminAccess();
             }
+
+            // Заповнити налаштування з localStorage якщо є
+            if (localStorage.getItem('gh_token')) document.getElementById('gh-token').value = localStorage.getItem('gh_token');
+            if (localStorage.getItem('gh_repo')) document.getElementById('gh-repo').value = localStorage.getItem('gh_repo');
         });
 
         function enableAdminAccess() {
@@ -1120,7 +1191,28 @@
             if (panel) panel.style.display = 'flex';
         }
 
-        // --- ІНТРО ЛОГІКА (Працює і на ПК, і на смартфонах) ---
+        function openGitHubModal() {
+            document.getElementById('github-modal').style.display = 'flex';
+        }
+
+        function closeGitHubModal() {
+            document.getElementById('github-modal').style.display = 'none';
+        }
+
+        function saveGitHubSettings() {
+            const token = document.getElementById('gh-token').value.trim();
+            const repo = document.getElementById('gh-repo').value.trim();
+            if (!token || !repo) {
+                alert("Заповніть обидва поля!");
+                return;
+            }
+            localStorage.setItem('gh_token', token);
+            localStorage.setItem('gh_repo', repo);
+            alert("Налаштування GitHub збережено!");
+            closeGitHubModal();
+        }
+
+        // --- ІНТРО ЛОГІКА ---
         function finishIntro() {
             const overlay = document.getElementById('intro-overlay');
             if (overlay) {
@@ -1400,11 +1492,12 @@
             if (citiesList) citiesList.style.display = 'grid';
         }
 
-        // EDIT MODE & SAVE
+        // EDIT MODE & GITHUB API SAVE
         function toggleEditMode() {
             const isCurrentlyEditing = document.body.classList.contains('editing-mode');
             const toggleBtn = document.getElementById('toggle-edit-btn');
             const saveBtn = document.getElementById('save-btn');
+            const settingsBtn = document.getElementById('github-settings-btn');
             const editableElements = document.querySelectorAll('[editable]');
 
             if (!isCurrentlyEditing) {
@@ -1412,38 +1505,73 @@
                 editableElements.forEach(el => el.setAttribute('contenteditable', 'true'));
                 if (toggleBtn) toggleBtn.innerText = '❌ Вимкнути редагування';
                 if (saveBtn) saveBtn.style.display = 'inline-block';
+                if (settingsBtn) settingsBtn.style.display = 'inline-block';
             } else {
                 document.body.classList.remove('editing-mode');
                 editableElements.forEach(el => el.removeAttribute('contenteditable'));
                 if (toggleBtn) toggleBtn.innerText = '✏️ Edit Mode';
                 if (saveBtn) saveBtn.style.display = 'none';
+                if (settingsBtn) settingsBtn.style.display = 'none';
             }
         }
 
-        function saveSiteHTML() {
+        async function saveToGitHub() {
+            const token = localStorage.getItem('gh_token');
+            const repo = localStorage.getItem('gh_repo');
+
+            if (!token || !repo) {
+                alert("Спочатку налаштуйте GitHub Token та Репозиторій через кнопку '⚙️ Налаштування GitHub'!");
+                openGitHubModal();
+                return;
+            }
+
             if (currentActiveCard) closeAnketaView();
-            
             document.body.classList.remove('editing-mode');
             document.querySelectorAll('[editable]').forEach(el => el.removeAttribute('contenteditable'));
-            const toggleBtn = document.getElementById('toggle-edit-btn');
-            const saveBtn = document.getElementById('save-btn');
-            if (toggleBtn) toggleBtn.innerText = '✏️ Edit Mode';
-            if (saveBtn) saveBtn.style.display = 'none';
 
-            const editorPanel = document.getElementById('editor-panel');
-            if (editorPanel) editorPanel.style.display = 'none';
-
+            // Підготовка контенту
             const fullContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-            
-            if (editorPanel) editorPanel.style.display = 'flex';
+            const encodedContent = btoa(unescape(encodeURIComponent(fullContent))); // коректне кодування для UTF-8
 
-            const blob = new Blob([fullContent], { type: 'text/html;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'index.html';
-            link.click();
+            const apiUri = `https://api.github.com/repos/${repo}/contents/index.html`;
 
-            alert('Зміни збережено! Скачано оновлений файл index.html. Завантаж його на GitHub.');
+            try {
+                // 1. Отримати поточний SHA файлу (необхідно для оновлення в GitHub API)
+                const getResp = await fetch(apiUri, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+
+                if (!getResp.ok) {
+                    throw new Error("Не вдалося знайти файл index.html в репозиторії. Перевірте правильність назви репо.");
+                }
+
+                const fileData = await getResp.json();
+                const fileSha = fileData.sha;
+
+                // 2. Надіслати запит на оновлення файлу
+                const putResp = await fetch(apiUri, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: "Update site via AFTERFALL Admin Terminal",
+                        content: encodedContent,
+                        sha: fileSha
+                    })
+                });
+
+                if (putResp.ok) {
+                    alert("✅ Успішно! Зміни збережено на GitHub. Сайт оновиться за кілька секунд.");
+                    location.reload();
+                } else {
+                    const errJson = await putResp.json();
+                    alert("Помилка збереження: " + (errJson.message || 'Невідома помилка'));
+                }
+            } catch (err) {
+                alert("Помилка мережі чи токена: " + err.message);
+            }
         }
     </script>
 </body>
