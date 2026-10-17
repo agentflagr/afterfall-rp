@@ -1206,6 +1206,10 @@
 
             if (localStorage.getItem('gh_token')) document.getElementById('gh-token').value = localStorage.getItem('gh_token');
             if (localStorage.getItem('gh_repo')) document.getElementById('gh-repo').value = localStorage.getItem('gh_repo');
+       }
+
+        document.querySelector('a[href*="ankety"]').addEventListener('click', () => {
+    switchTab('batfamily');
         });
 
         function enableAdminAccess() {
