@@ -899,20 +899,20 @@
             </div>
             
             <div class="sub-nav" id="categories-nav">
-                <button class="sub-btn" onclick="switchSubTab('batfamily', event)">Batfamily</button>
+                <button class="sub-btn active" onclick="switchSubTab('batfamily', event)">Batfamily</button>
                 <button class="sub-btn" onclick="switchSubTab('gotham-villains', event)">Gotham villains</button>
                 <button class="sub-btn" onclick="switchSubTab('superman-family', event)">Superman family</button>
                 <button class="sub-btn" onclick="switchSubTab('justice-league', event)">Justice League</button>
                 <button class="sub-btn" onclick="switchSubTab('magic-supernatural', event)">Magic, horror and supernatural</button>
-                <button class="sub-btn active" onclick="switchSubTab('argus-section', event)">ARGUS / Suicide Squad / Peacemaker</button>
+                <button class="sub-btn" onclick="switchSubTab('argus-section', event)">ARGUS / Suicide Squad / Peacemaker</button>
                 
-                <button class="add-category-btn" onclick="createNewCategory()">+ Додати нову категорію</button>
+                <button class="sub-btn">Titans &amp; young heroes</button><button class="add-category-btn" onclick="createNewCategory()">+ Додати нову категорію</button>
             </div>
 
             <!-- СПИСОК АНКЕТ ПО КАТЕГОРІЯХ -->
             <div id="anketa-lists-container" style="display: block;">
                 <!-- BATFAMILY -->
-                <div id="batfamily" class="sub-content">
+                <div id="batfamily" class="sub-content active">
                     <div style="margin-bottom: 15px; text-align: right;">
                         <button class="btn-action admin-only" onclick="addNewAnketa('batfamily-grid')">+ Додати профіль персонажа</button>
                     </div>
@@ -952,7 +952,7 @@
                 </div>
 
                 <!-- A.R.G.U.S. / SUICIDE SQUAD / PEACEMAKER -->
-                <div id="argus-section" class="sub-content active">
+                <div id="argus-section" class="sub-content">
                     <div id="factions-main-view" class="faction-grid" style="display: none;">
                         <div class="faction-card" onclick="openFactionPage('argus-sub')">
                             <h3>ARGUS</h3>
@@ -1013,7 +1013,12 @@
                         <div class="anketa-grid" id="peacemaker-grid"></div>
                     </div>
                 </div>
-            </div>
+            <div id="cat-1792325997101" class="sub-content">
+                <div style="margin-bottom: 15px; text-align: right;">
+                    <button class="btn-action admin-only" onclick="addNewAnketa('grid-1792325997101')">+ Add Character Profile</button>
+                </div>
+                <div class="anketa-grid" id="grid-1792325997101"></div>
+            </div></div>
 
             <!-- SINGLE ANKETA VIEW -->
             <div id="anketa-single-view" class="anketa-full-view" style="display: none;">
@@ -1629,6 +1634,7 @@
             }
         }
     </script>
+
 
 
 </body></html>
