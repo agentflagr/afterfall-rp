@@ -899,12 +899,12 @@
             </div>
             
             <div class="sub-nav" id="categories-nav">
-                <button class="sub-btn" onclick="switchSubTab('batfamily', event)">Batfamily</button>
+                <button class="sub-btn active" onclick="switchSubTab('batfamily', event)">Batfamily</button>
                 <button class="sub-btn" onclick="switchSubTab('gotham-villains', event)">Gotham villains</button>
                 <button class="sub-btn" onclick="switchSubTab('superman-family', event)">Superman family</button>
                 <button class="sub-btn" onclick="switchSubTab('justice-league', event)">Justice League</button>
                 <button class="sub-btn" onclick="switchSubTab('magic-supernatural', event)">Magic, horror and supernatural</button>
-                <button class="sub-btn active" onclick="switchSubTab('argus-section', event)">ARGUS / Suicide Squad / Peacemaker</button>
+                <button class="sub-btn" onclick="switchSubTab('argus-section', event)">ARGUS / Suicide Squad / Peacemaker</button>
                 <button class="sub-btn" onclick="switchSubTab('titans-heroes', event)">Titans and young heroes</button>
                 
                 <button class="add-category-btn" onclick="createNewCategory()">+ Додати нову категорію</button>
@@ -913,7 +913,7 @@
             <!-- СПИСОК АНКЕТ ПО КАТЕГОРІЯХ -->
             <div id="anketa-lists-container" style="display: block;">
                 <!-- BATFAMILY -->
-                <div id="batfamily" class="sub-content">
+                <div id="batfamily" class="sub-content active">
                     <div style="margin-bottom: 15px; text-align: right;">
                         <button class="btn-action admin-only" onclick="addNewAnketa('batfamily-grid')">+ Додати профіль персонажа</button>
                     </div>
@@ -965,8 +965,8 @@
                 </div>
 
                 <!-- A.R.G.U.S. / SUICIDE SQUAD / PEACEMAKER -->
-                <div id="argus-section" class="sub-content active">
-                    <div id="factions-main-view" class="faction-grid" style="display: none;">
+                <div id="argus-section" class="sub-content">
+                    <div id="factions-main-view" class="faction-grid" style="display: grid;">
                         <div class="faction-card" onclick="openFactionPage('argus-sub')">
                             <h3>ARGUS</h3>
                             <p>Група передових дослідників, що об'єднує надлюдей.</p>
@@ -1004,7 +1004,7 @@
                         <div class="anketa-grid" id="argus-grid"></div>
                     </div>
 
-                    <div id="squad-sub" class="sub-faction-page" style="display: block; margin-top: 20px;">
+                    <div id="squad-sub" class="sub-faction-page" style="display: none; margin-top: 20px;">
                         <button class="back-btn" onclick="closeFactionPage()">← Назад до Фракції</button>
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                             <h2 style="color:#fff; font-family:var(--font-title);">Профілі Загону Самогубців</h2>
