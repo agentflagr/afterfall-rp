@@ -1408,91 +1408,117 @@
         // ANKETA SYSTEM DATA STORAGE
         let currentActiveCard = null;
 
-        function addNewAnketa(gridId) {
-            const grid = document.getElementById(gridId);
-            if (!grid) return;
-            const cardId = 'anketa-' + Date.now();
+       function addNewAnketa(gridId) {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    const cardId = 'anketa-' + Date.now();
 
-            const card = document.createElement('div');
-            card.className = 'anketa-card';
-            card.id = cardId;
-            card.onclick = function() { openAnketaView(cardId); };
+    const card = document.createElement('div');
+    card.className = 'anketa-card';
+    card.id = cardId;
+    card.onclick = function() { openAnketaView(cardId); };
 
-            card.innerHTML = `
-                <img src="https://via.placeholder.com/280x240/18181c/8b1222?text=New+Hero" class="anketa-card-img" alt="Hero">
-                <div class="anketa-card-info">
-                    <div class="anketa-card-title" data-field="name">New Character</div>
-                    <div class="anketa-card-alter" data-field="alter">Alter-Ego</div>
-                </div>
-                <div class="anketa-hidden-data" style="display:none;">
-                    <div data-field="age">Age: Unknown</div>
-                    <div data-field="city">City: Unknown</div>
-                    <div data-field="skills">Skill 1</div>
-                    <div data-field="personality">Personality details...</div>
-                </div>
-            `;
+    card.innerHTML = `
+        <img src="https://via.placeholder.com/280x240/18181c/8b1222?text=New+Hero" class="anketa-card-img" alt="Hero">
+        <div class="anketa-card-info">
+            <div class="anketa-card-title" data-field="name">New Character</div>
+            <div class="anketa-card-alter" data-field="alter">Alter-Ego</div>
+        </div>
+        <div class="anketa-hidden-data" style="display:none;">
+            <div data-field="age">Age: Unknown</div>
+            <div data-field="city">City: Unknown</div>
+            <div data-field="skills">Володіння зброєю, Рукопашний бій</div> <!-- Здібності тут -->
+            <div data-field="personality">Personality details...</div>
+        </div>
+    `;
 
-            grid.appendChild(card);
-            openAnketaView(cardId);
-        }
+    grid.appendChild(card);
+    openAnketaView(cardId);
+}
 
         function openAnketaView(cardId) {
-            currentActiveCard = document.getElementById(cardId);
-            if (!currentActiveCard) return;
+    currentActiveCard = document.getElementById(cardId);
+    if (!currentActiveCard) return;
 
-            const avatarImg = currentActiveCard.querySelector('.anketa-card-img');
-            const nameEl = currentActiveCard.querySelector('[data-field="name"]');
-            const alterEl = currentActiveCard.querySelector('[data-field="alter"]');
+    const avatarImg = currentActiveCard.querySelector('.anketa-card-img');
+    const nameEl = currentActiveCard.querySelector('[data-field="name"]');
+    const alterEl = currentActiveCard.querySelector('[data-field="alter"]');
 
-            if (avatarImg) document.getElementById('view-avatar').src = avatarImg.src;
-            if (nameEl) document.getElementById('view-name').innerText = nameEl.innerText;
-            if (alterEl) document.getElementById('view-alter').innerText = alterEl.innerText;
+    if (avatarImg) document.getElementById('view-avatar').src = avatarImg.src;
+    if (nameEl) document.getElementById('view-name').innerText = nameEl.innerText;
+    if (alterEl) document.getElementById('view-alter').innerText = alterEl.innerText;
 
-            const hiddenData = currentActiveCard.querySelector('.anketa-hidden-data');
-            if (hiddenData) {
-                const ageEl = hiddenData.querySelector('[data-field="age"]');
-                const cityEl = hiddenData.querySelector('[data-field="city"]');
-                const persEl = hiddenData.querySelector('[data-field="personality"]');
+    const hiddenData = currentActiveCard.querySelector('.anketa-hidden-data');
+    if (hiddenData) {
+        const ageEl = hiddenData.querySelector('[data-field="age"]');
+        const cityEl = hiddenData.querySelector('[data-field="city"]');
+        const persEl = hiddenData.querySelector('[data-field="personality"]');
+        const skillsEl = hiddenData.querySelector('[data-field="skills"]');
 
-                if (ageEl) document.getElementById('view-age').innerText = ageEl.innerText;
-                if (cityEl) document.getElementById('view-city').innerText = cityEl.innerText;
-                if (persEl) document.getElementById('view-personality').innerText = persEl.innerText;
+        if (ageEl) document.getElementById('view-age').innerText = ageEl.innerText;
+        if (cityEl) document.getElementById('view-city').innerText = cityEl.innerText;
+        if (persEl) document.getElementById('view-personality').innerText = persEl.innerText;
+
+        // ЗАВАНТАЖУЄМО ЗДІБНОСТІ ЦЬОГО ПЕРСОНАЖА
+        const viewSkills = document.getElementById('view-skills');
+        if (viewSkills) {
+            viewSkills.innerHTML = ''; // Очищаємо попередні
+            let skillsText = skillsEl ? skillsEl.innerText.trim() : '';
+            if (skillsText) {
+                // Розбиваємо кому або виводимо списком
+                let skillsArray = skillsText.split(',').map(s => s.trim()).filter(Boolean);
+                skillsArray.forEach(skill => {
+                    const chip = document.createElement('span');
+                    chip.className = 'skill-chip';
+                    chip.innerHTML = `<span editable>${skill}</span> <span class="remove-chip" onclick="this.parentElement.remove()">×</span>`;
+                    viewSkills.appendChild(chip);
+                });
             }
-
-            const listsContainer = document.getElementById('anketa-lists-container');
-            const singleView = document.getElementById('anketa-single-view');
-            if (listsContainer) listsContainer.style.display = 'none';
-            if (singleView) singleView.style.display = 'block';
         }
+    }
 
-        function closeAnketaView() {
-            if (currentActiveCard) {
-                const viewAvatar = document.getElementById('view-avatar');
-                const viewName = document.getElementById('view-name');
-                const viewAlter = document.getElementById('view-alter');
+    const listsContainer = document.getElementById('anketa-lists-container');
+    const singleView = document.getElementById('anketa-single-view');
+    if (listsContainer) listsContainer.style.display = 'none';
+    if (singleView) singleView.style.display = 'block';
+}
 
-                if (viewAvatar) currentActiveCard.querySelector('.anketa-card-img').src = viewAvatar.src;
-                if (viewName) currentActiveCard.querySelector('[data-field="name"]').innerText = viewName.innerText;
-                if (viewAlter) currentActiveCard.querySelector('[data-field="alter"]').innerText = viewAlter.innerText;
+       function closeAnketaView() {
+    if (currentActiveCard) {
+        const viewAvatar = document.getElementById('view-avatar');
+        const viewName = document.getElementById('view-name');
+        const viewAlter = document.getElementById('view-alter');
 
-                const hiddenData = currentActiveCard.querySelector('.anketa-hidden-data');
-                if (hiddenData) {
-                    const viewAge = document.getElementById('view-age');
-                    const viewCity = document.getElementById('view-city');
-                    const viewPers = document.getElementById('view-personality');
+        if (viewAvatar) currentActiveCard.querySelector('.anketa-card-img').src = viewAvatar.src;
+        if (viewName) currentActiveCard.querySelector('[data-field="name"]').innerText = viewName.innerText;
+        if (viewAlter) currentActiveCard.querySelector('[data-field="alter"]').innerText = viewAlter.innerText;
 
-                    if (viewAge) hiddenData.querySelector('[data-field="age"]').innerText = viewAge.innerText;
-                    if (viewCity) hiddenData.querySelector('[data-field="city"]').innerText = viewCity.innerText;
-                    if (viewPers) hiddenData.querySelector('[data-field="personality"]').innerText = viewPers.innerText;
-                }
+        const hiddenData = currentActiveCard.querySelector('.anketa-hidden-data');
+        if (hiddenData) {
+            const viewAge = document.getElementById('view-age');
+            const viewCity = document.getElementById('view-city');
+            const viewPers = document.getElementById('view-personality');
+            const skillsEl = hiddenData.querySelector('[data-field="skills"]');
+
+            if (viewAge) hiddenData.querySelector('[data-field="age"]').innerText = viewAge.innerText;
+            if (viewCity) hiddenData.querySelector('[data-field="city"]').innerText = viewCity.innerText;
+            if (viewPers) hiddenData.querySelector('[data-field="personality"]').innerText = viewPers.innerText;
+
+            // ЗБИРАЄМО ЗДІБНОСТІ НАЗАД У ПРИХОВАНЕ ПОЛЕ КАРТКИ
+            if (skillsEl) {
+                const chips = document.querySelectorAll('#view-skills .skill-chip span[editable]');
+                let skillsList = Array.from(chips).map(c => c.innerText.trim()).filter(Boolean);
+                skillsEl.innerText = skillsList.join(', ');
             }
-
-            const singleView = document.getElementById('anketa-single-view');
-            const listsContainer = document.getElementById('anketa-lists-container');
-            if (singleView) singleView.style.display = 'none';
-            if (listsContainer) listsContainer.style.display = 'block';
-            currentActiveCard = null;
         }
+    }
+
+    const singleView = document.getElementById('anketa-single-view');
+    const listsContainer = document.getElementById('anketa-lists-container');
+    if (singleView) singleView.style.display = 'none';
+    if (listsContainer) listsContainer.style.display = 'block';
+    currentActiveCard = null;
+}
 
         function deleteCurrentAnketa() {
             if (currentActiveCard) {
